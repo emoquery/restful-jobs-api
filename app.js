@@ -1,4 +1,5 @@
 const express = require("express");
+
 const app = express();
 
 const dotenv = require("dotenv");
@@ -22,12 +23,6 @@ const ErrorHandler = require("./utils/errorHandler");
 
 dotenv.config({ path: "./config/config.env" });
 
-process.on("uncaughtException", (err) => {
-  console.log(`Error: ${err.message}`);
-  console.log("Shutting down the server due to uncaught exception");
-  process.exit(1);
-});
-
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 100,
@@ -37,7 +32,7 @@ connectDatabase();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static('public'))
+app.use(express.static("public"));
 
 app.use(helmet());
 
@@ -71,7 +66,7 @@ const PORT = process.env.PORT;
 
 const server = app.listen(PORT, () => {
   console.log(
-    `Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`
+    `Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`,
   );
 });
 

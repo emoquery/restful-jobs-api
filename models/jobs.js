@@ -114,7 +114,7 @@ jobSchema.pre("save", function (next) {
   next();
 });
 
-jobSchema.pre("save", async function (next) {
+jobSchema.pre("save", async function () {
   const loc = await geoCoder.geocode(this.address);
 
   this.location = {

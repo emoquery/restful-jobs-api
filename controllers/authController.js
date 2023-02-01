@@ -8,7 +8,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
 
-exports.registerUser = catchAsyncErrors(async (req, res, next) => {
+exports.registerUser = catchAsyncErrors(async (req, res) => {
   const { name, email, password, role } = req.body;
 
   const user = await User.create({
@@ -40,7 +40,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Invalid email or passord"), 401);
   }
 
-  sendToken(user, 200, res);
+  return sendToken(user, 200, res);
 });
 
 exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
@@ -110,7 +110,7 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-exports.logout = catchAsyncErrors(async (req, res, next) => {
+exports.logout = catchAsyncErrors(async (req, res) => {
   res.cookie("token", "none", {
     expires: new Date(Date.now()),
     httpOnly: true,

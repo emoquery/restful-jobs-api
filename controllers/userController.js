@@ -6,7 +6,7 @@ const sendToken = require("../utils/jwtToken");
 const fs = require("fs");
 const APIFilters = require("../utils/apiFilters");
 
-exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
+exports.getUserProfile = catchAsyncErrors(async (req, res) => {
   const user = await User.findById(req.user.id);
 
   res.status(200).json({
@@ -31,7 +31,7 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-exports.updateUser = catchAsyncErrors(async (req, res, next) => {
+exports.updateUser = catchAsyncErrors(async (req, res) => {
   const newUserData = {
     name: req.body.name,
     email: req.body.email,
@@ -49,7 +49,7 @@ exports.updateUser = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.getAppliedJobs = catchAsyncErrors(async (req, res, next) => {
+exports.getAppliedJobs = catchAsyncErrors(async (req, res) => {
   const jobs = await Job.find({ "applicantsApplied.id": req.user.id }).select(
     "+applicantsApplied"
   );
@@ -61,7 +61,7 @@ exports.getAppliedJobs = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.getPublishedJobs = catchAsyncErrors(async (req, res, next) => {
+exports.getPublishedJobs = catchAsyncErrors(async (req, res) => {
   const jobs = await Job.find({ user: req.user.id });
 
   res.status(200).json({
@@ -71,7 +71,7 @@ exports.getPublishedJobs = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
+exports.deleteUser = catchAsyncErrors(async (req, res) => {
   deleteUserData(req.user.id, req.user.role);
 
   const user = await User.findByIdAndDelete(req.user.id);
@@ -87,7 +87,7 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.getUsers = catchAsyncErrors(async (req, res, next) => {
+exports.getUsers = catchAsyncErrors(async (req, res) => {
   const apiFilters = new APIFilters(User.find(), req.query)
     .filter()
     .sort()

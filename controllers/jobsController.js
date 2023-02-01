@@ -1,14 +1,14 @@
+const path = require("path");
+const fs = require("fs");
 const Job = require("../models/jobs");
 
 const geoCoder = require("../utils/geocoder");
-const path = require("path");
-const fs = require("fs");
 
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
 const APIFilters = require("../utils/apiFilters");
 
-exports.getJobs = catchAsyncErrors(async (req, res, next) => {
+exports.getJobs = catchAsyncErrors(async (req, res) => {
   const apiFilters = new APIFilters(Job.find(), req.query)
     .filter()
     .sort()
@@ -43,7 +43,7 @@ exports.updateJob = catchAsyncErrors(async (req, res, next) => {
     runValidators: true,
   });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "job is updated",
     data: job,
@@ -57,7 +57,7 @@ exports.getJobId = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Job not found", 404));
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: job,
   });
@@ -72,13 +72,13 @@ exports.getJobIdAndSlug = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Job not found", 404));
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: job,
   });
 });
 
-exports.newJob = catchAsyncErrors(async (req, res, next) => {
+exports.newJob = catchAsyncErrors(async (req, res) => {
   req.body.user = req.user.id;
 
   const job = await Job.create(req.body);
@@ -104,7 +104,7 @@ exports.deleteJob = catchAsyncErrors(async (req, res, next) => {
   }
 
   for (let i = 0; i < job.applicantsApplied.length; i++) {
-    let filepath =
+    const filepath =
       `${__dirname}/public/uploads/${job.applicantsApplied[i].resume}`.replace(
         "\\controllers",
         ""
@@ -117,14 +117,14 @@ exports.deleteJob = catchAsyncErrors(async (req, res, next) => {
 
   job = await Job.findByIdAndDelete(req.params.id);
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "job is deleted",
     data: job,
   });
 });
 
-exports.getJobsInRadius = catchAsyncErrors(async (req, res, next) => {
+exports.getJobsInRadius = catchAsyncErrors(async (req, res) => {
   const { zipcode, distance } = req.params;
 
   const loc = await geoCoder.geocode(zipcode);
@@ -168,14 +168,14 @@ exports.jobStats = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: stats,
   });
 });
 
 exports.applyJob = catchAsyncErrors(async (req, res, next) => {
-  let job = await Job.findById(req.params.id).select("+applicantsApplied");
+  const job = await Job.findById(req.params.id).select("+applicantsApplied");
 
   if (!job) {
     return next(new ErrorHandler("job not found", 404));
